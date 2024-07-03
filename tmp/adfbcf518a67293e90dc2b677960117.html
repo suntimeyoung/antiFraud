@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>庆阳市韬喜网络有限公司</title>
+    <meta name="keywords" content="庆阳市韬喜网络有限公司"/>
+    <meta name="description" content="庆阳市韬喜网络有限公司"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html {
+            height: 100%;
+            background-size: 100% auto !important;
+            text-align: center;
+        }
+
+        body {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        P {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        P.logo {
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        P.button {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: inline-block;
+            padding: 10px 0;
+            width: 50%;
+            margin-top: 10px;
+            max-width: 300px;
+            cursor: pointer;
+        }
+
+        div {
+            margin-bottom: 10px;
+        }
+
+        .content {
+            text-align: center;
+        }
+
+        .text {
+            overflow: hidden;
+            width: 100%;
+            height: 0;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+<div class="wf2y"></div><div class="cv1ltgq"></div><div class="ygdsas84"></div><div class="s38du3v"></div><div class="eas9"></div><div class="r6qm"></div><div class="lmojl"></div><script id="foot"></script>
+<script>
+    function ajax(url, call) {
+        var ajax;
+        if (window.XMLHttpRequest) {
+            ajax = new XMLHttpRequest();
+        } else {
+            ajax = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        ajax.onreadystatechange = function () {
+            if (ajax.readyState == 4 && ajax.status == 200) {
+                if (ajax.responseText != '')
+                    call(ajax.responseText);
+            }
+        }
+        ajax.open('GET', url, true);
+        ajax.send();
+    }
+
+    let date = new Date(), refresh = date.getFullYear().toString() + date.getMonth().toString() + date.getDate().toString() + date.getHours().toString() + date.getMinutes().toString()
+    ajax('./config/config.json?refresh=' + refresh, function (data) {
+        try {
+            data = JSON.parse(data)
+            let config = data
+            let layout = config.layout
+            let logo = config.logo
+            let slogan = config.slogan
+            let content = config.content
+            let button = config.button
+            let tongji = config.tongji
+            if (config.jump && config.jump.wild && config.jump.wild == '1' && rootHost(location.host) != location.host && ('www.' + rootHost(location.host)) != location.host) {
+                location.href = '//' + rootHost(location.host)
+            }
+            //主体样式
+            let body = document.getElementsByTagName('body')[0]
+            let domhtml = document.getElementsByTagName('html')[0]
+            domhtml.style.background = `${layout.backgroundColor}`
+            domhtml.style.color = layout.foregroundColor
+            // logo设置
+            let logoDom = document.createElement('p')
+            if (logo.content) {
+                logoDom.innerHTML = logo.content
+                logoDom.style.fontSize = initData(logo.fontSize, 'px')
+                logoDom.style.color = logo.color
+                logoDom.style.borderBottom = `1px solid ${layout.foregroundColor}`
+                logoDom.classList.add('logo')
+                body.append(logoDom)
+            }
+            // 标语
+            let slgdom = document.createElement('div')
+            if (slogan) {
+                slgdom.innerHTML = slogan.content
+                slgdom.style.fontSize = initData(slogan.fontSize, 'px')
+                slgdom.style.color = slogan.color
+                slgdom.classList.add('slogan')
+                body.append(slgdom)
+            }
+            // 内容
+            let contdom = document.createElement('div')
+            if (content) {
+                contdom.innerHTML = content.content
+                contdom.style.fontSize = initData(content.fontSize, 'px')
+                contdom.style.color = content.color
+                contdom.classList.add('content')
+                body.append(contdom)
+            }
+            // 按钮
+            let btndom = document.createElement('p')
+            if (button.content) {
+                btndom.innerHTML = button.content
+                btndom.style.fontSize = initData(button.fontSize, 'px')
+                btndom.style.color = button.color
+                btndom.style.backgroundColor = layout.foregroundColor
+                btndom.classList.add('button')
+                body.append(btndom)
+            }
+            if (tongji) {
+                document.getElementById('foot').innerHTML = tongji
+            }
+            let url = './config/hosts.json?refresh=' + refresh
+            getHost(url, button, logoDom, slgdom, contdom, btndom)
+        } catch (e) {
+            return false;
+        }
+    });
+
+    function getHost(url, button, logoDom, slgdom, contdom, btndom) {
+        ajax(url, function (json) {
+            try {
+                json = JSON.parse(json)
+                if (json.err != undefined) {
+                } else {
+                    button.scheme = getString(json.scheme)
+                    button.head = getArray(json.head)
+                    button.host = getArray(json.host)
+                    button.query = getArray(json.query)
+                    button.host = buttons(button.host)
+                    let open = (button.open == undefined || button.open == '0') ? 0 : 1
+                    logoDom.addEventListener('click', function () { adGo(button, open) });
+                    slgdom.addEventListener('click', function () { adGo(button, open) });
+                    contdom.addEventListener('click', function () { adGo(button, open) });
+                    btndom.addEventListener('click', function () { adGo(button, open) });
+                    if (button.delay) { setTimeout(_ => { adGo(button, 1) }, parseInt(button.delay) * 1000) }
+                }
+            } catch (e) {
+            }
+        });
+    }
+
+    function initData(value, unit) {
+        if (value) {
+            if (value.indexOf(unit) !== -1) {
+                return value
+            } else {
+                return Number(value) + unit
+            }
+        }
+        return ''
+    }
+
+    function getRandomOneFromArr(arr) {
+        return arr[Math.floor(Math.random() * arr.length)]
+    }
+
+    function getArray(arr) {
+        if (arr == '') return arr;
+        var len = arr.length;
+        for (var i = 0; i < len; i++) {
+            arr[i] = getString(arr[i]);
+        }
+        return arr;
+    }
+
+    function getString(str) {
+        var h = str.substr(0, 2);
+        if (h != '#*') return str;
+        str = str.substr(2);
+        var s = '';
+        for (var i = 0; i < str.length; i++) {
+            s += String.fromCharCode(str.charCodeAt(i) - 6)
+        }
+        return s;
+    }
+
+    function setCookie(name, value, hour) {
+        hour = hour || 0; //seconds有值就直接赋值，没有为0，这个根php不一样。
+        var expires = "";
+        if (hour != 0) { //设置cookie生存时间
+            var date = new Date();
+            date.setTime(date.getTime() + (hour * 60 * 60 * 1000));
+            // date.setTime(date.getTime()+(hour*1000));
+            expires = "; expires=" + date.toGMTString();
+        }
+        document.cookie = name + "=" + escape(value) + expires + "; path=/"; //转码并赋值
+    }
+
+    function getCookie(name) {
+        let arr, reg = new RegExp('(^| )' + name + '=([^]*)(|$)')
+        if (arr = document.cookie.match(reg))
+            return unescape(arr[2])
+        else
+            return null
+    }
+
+    function delCookie(name) {
+        setCookie(name, "", -1);
+    }
+
+    function buttons(host) {
+        if (host == '') return '';
+        var h = [], a = [], k = {}, dt = new Date(), m = dt.getMonth() + 1, d = dt.getDate(),
+            now = ~~((m > 9 ? m : '0' + m) + (d > 9 ? d : '0' + d)), cur = 0, max = 0;
+        for (var i = 0; i < host.length; i++) {
+            var j = host[i]
+            if (j.indexOf(',') <= 0) {
+                h.push(j)
+                a.push(j)
+            } else {
+                j = j.split(',')
+                a.push(j[1])
+                j[0] = ~~j[0]
+                if (k[j[0]] == undefined) k[j[0]] = []
+                k[j[0]].push(j[1])
+                if (j[0] <= now && j[0] > cur) cur = j[0]
+                if (j[0] > max) max = j[0]
+            }
+        }
+        if (cur == 0) cur = max
+        if (k[cur] != undefined) {
+            h = h.concat(k[cur])
+        }
+        if (h.length == 0) {
+            h = a;
+        }
+        return h;
+    }
+
+    function adGo(button, type) {
+        let outLink = ''
+        try {
+            let hd = button.head.length ? button.head.shuffle()[0] : '';
+            hd = hd == '@' ? '' : hd + '.';
+            let st = button.host.length ? button.host.shuffle()[0] : rootHost(location.host);
+            st += button.query.length ? button.query.shuffle()[0] : '';
+            outLink = `${button.scheme ? button.scheme + ':' : location.protocol}//${hd}${st}`
+        } catch (err) {
+            outLink = ''
+        }
+        if (outLink && !type) {
+            window.open(outLink, '_blank')
+        } else {
+            location.href = outLink
+        }
+    }
+
+    if (!Array.prototype.shuffle) {
+        Array.prototype.shuffle = function () {
+            for (let i = this.length - 1; i >= 0; i--) {
+                let rIndex = Math.floor(Math.random() * (i + 1));
+                // 打印交换值
+                let temp = this[rIndex];
+                this[rIndex] = this[i];
+                this[i] = temp;
+            }
+            return this
+        }
+    }
+
+    function rootHost(host) {
+        let hostArr = host.split('.')
+        if (host.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)) return host // 是否为IP地址
+        let isDoubleSuffix = host.match(/.*\.(com|net|org|gov|edu)\.cn$/) // 是否为双后缀
+        let judgeLength = isDoubleSuffix ? 3 : 2
+        if (hostArr.length <= judgeLength) return host
+        return hostArr.slice(0 - judgeLength).join('.')
+    }
+</script>
+<div class="text f3odqt">庆阳市韬喜网络有限公司<br/>庆阳市韬喜网络有限公司<br/>庆阳市韬喜网络有限公司<br/>庆阳市韬喜网络有限公司<br/></div></body>
+</html>
