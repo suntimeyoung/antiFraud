@@ -1,10 +1,11 @@
+# 日期 : 2024/7/3
 import random
 import shutil
 import re
 import os
 
 from bs4 import BeautifulSoup
-from api import query_gpt_api
+from api_div import query_gpt_api
 
 # 获取一个网页中图片的最多数量
 max_image_count = 15
@@ -15,7 +16,7 @@ max_gpt_window_size = 2500
 # 测试样本数
 max_testcase_count = 10
 # 随机数种子，若为 None，则不设定
-random_seed = 882
+random_seed = 8827567
 # 文件输入输出目录
 input_path = 'F:/大三下/生产实习/work/data/山东反诈运营_20240520/'
 output_path = 'F:/大三下/生产实习/work/data/output/'
@@ -176,29 +177,35 @@ def handle_file_list(seed=None):
     random.seed(seed)
     test_file_list = random.sample(filename_list, max_testcase_count)
     for filename in test_file_list:
+        output_dict = {}
         print('-----------------------------------------')
         html_list = html_filter(input_path + filename)
         print(f"{filename}'s size = {len(repr(html_list))}")
         print(repr(html_list))
-        print(query_gpt_api(repr(html_list)))
+        while output_dict == {}:
+            output_dict = query_gpt_api([repr(html_list),'',''])
+            print(output_dict)
+
     copy_into_dir(test_file_list)
 
 
 def handle_file_list_to_file():
-    output_file = 'output.txt'
-    # 先清空文件内容
-    open(output_file, 'w', encoding='utf-8').close()
 
     filename_list = list_files(input_path)
     test_file_list = random.sample(filename_list, max_testcase_count)
 
-    with open(output_file, 'a', encoding='utf-8') as f:
-        for filename in test_file_list:
+    for filename in test_file_list:
+        with open(output_path+filename, 'w', encoding='utf-8') as f:
+            output_dict = {}
             f.write('-----------------------------------------\n')
             html_list = html_filter(input_path + filename)
             f.write(f"{filename}'s size = {len(repr(html_list))}\n")
             f.write(f"{html_list}\n")
-            f.write(f"{query_gpt_api(repr(html_list))}\n")
+
+            while output_dict == {}:
+                output_dict = query_gpt_api([repr(html_list),'',''])
+
+            f.write(f"{output_dict}\n")
 
     copy_into_dir(test_file_list)
 

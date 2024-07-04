@@ -8,9 +8,9 @@ server_port = 3002
 
 # 修改gpt设置参数
 body_dict['options'] = {}
-body_dict['temperature'] = 0.8
+body_dict['temperature'] = 0.9
 body_dict['top_p'] = 0.8
-systemMessage_filepath = './systemMessage.txt'
+systemMessage_filepath = 'systemMessage/systemMessage.txt'
 
 def read_file_to_string(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:

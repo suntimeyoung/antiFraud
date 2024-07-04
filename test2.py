@@ -3,6 +3,6 @@ def read_file_to_string(file_path):
         file_content = file.read()
     return file_content
 
-file_path = 'systemMessage.txt'  # 请将your_file.txt替换为你的文件路径
+file_path = 'systemMessage/systemMessage1.txt'  # 请将your_file.txt替换为你的文件路径
 file_content = read_file_to_string(file_path)
 print(file_content)
