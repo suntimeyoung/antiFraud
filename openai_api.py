@@ -1,4 +1,5 @@
 import os
+import time
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -16,6 +17,9 @@ class GPT:
         self.total_tokens = 0
         self.total_rounds = 0
         self.max_tokens = 200
+        self.total_time = time.time()
+        self.last_time = 0
+        self.min_interval = 1
         self.prompt_dir = './prompt/'
 
         # 获取 API 密钥
@@ -26,15 +30,23 @@ class GPT:
         )
 
     def query_api_bare(self, message: list[dict]):
+        # 控制api访问速率
+        interval = time.time() - self.last_time
+        if interval < self.min_interval:
+            time.sleep(self.min_interval - interval)
+        self.last_time = time.time()
+
         completion = self.client.chat.completions.create(
             model="gpt-3.5-turbo",
             # response_format={"type": "json_object"},
             messages=message,
             max_tokens=self.max_tokens
         )
-
         # 提取回答
         answer = completion.choices[0].message.content
+        self.total_rounds += 1
+        self.total_tokens += completion.usage.total_tokens
+        print(f"||| total_tokens = {completion.usage.total_tokens}")
         return answer
 
     def query_api_sectional(self, html_str):
