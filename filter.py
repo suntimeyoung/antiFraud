@@ -1,19 +1,22 @@
 import random
 import shutil
+import json
 import re
 import os
 
 from bs4 import BeautifulSoup
-from api import query_gpt_api
+from openai_api import GPT
 
 # 获取一个网页中图片的最多数量
 max_image_count = 15
 # 图片的最大长度，一般过大的都是图片的编码
 max_image_size = 100
 # GPT的最大上下文窗口
-max_gpt_window_size = 3500
+max_gpt_window_size = 2500
 # 测试样本数
-max_testcase_count = 5
+max_testcase_count = 1
+# 随机数种子，若为 None，则不设定
+random_seed = 8827567
 # 文件输入输出目录
 input_path = 'E:/WORK/Files/input/'
 output_path = 'E:/WORK/Files/output/'
@@ -48,6 +51,38 @@ def copy_into_dir(file_list):
             print(f"Error deleting file {file_path}: {e}")
     for filename in file_list:
         shutil.copy(input_path + filename, './tmp')
+
+
+def is_valid_json(input_data):
+    try:
+        input_data = json.loads(input_data)
+    except:
+        return False
+
+    # 检查输入是否为字典
+    if not isinstance(input_data, dict):
+        return False
+
+    # 检查字典是否具有指定的键
+    required_keys = ["characteristic_phrases", "fraud_tag", "web_type"]
+    for key in required_keys:
+        if key not in input_data:
+            return False
+
+    # 检查键 "characteristic_phrases" 的值是否为列表，且列表中的每个元素都是字符串
+    if not isinstance(input_data["characteristic_phrases"], list):
+        return False
+    for phrase in input_data["characteristic_phrases"]:
+        if not isinstance(phrase, str):
+            return False
+
+    # 检查键 "fraud_tag" 和 "web_type" 的值是否为字符串
+    if not isinstance(input_data["fraud_tag"], str):
+        return False
+    if not isinstance(input_data["web_type"], str):
+        return False
+
+    return True
 
 
 def get_website_text(soup):
@@ -156,7 +191,8 @@ def html_filter(file_path):
 
     # 处理源代码，获得文本信息
     filtered_list = extract_meta_information(soup)
-    filtered_list += clean_strings(random_drop(max_gpt_window_size - max_image_size * max_image_count, get_website_text(soup)))
+    filtered_list += random_drop(max_gpt_window_size - max_image_size * max_image_count, get_website_text(soup))
+    # filtered_list += clean_strings(random_drop(max_gpt_window_size - max_image_size * max_image_count, get_website_text(soup)))
     filtered_list += get_html_candidates(soup)
 
 
@@ -166,39 +202,35 @@ def html_filter(file_path):
     return filtered_list
 
 
-def handle_file_list():
+def handle_file_list(seed):
+    gpt = GPT()
     filename_list = list_files(input_path)
+    if seed is None:
+        seed = random.randint(0, 1000000)
+    print(f"random seed is: {seed}")
+    random.seed(seed)
     test_file_list = random.sample(filename_list, max_testcase_count)
     for filename in test_file_list:
         print('-----------------------------------------')
         html_list = html_filter(input_path + filename)
         print(f"{filename}'s size = {len(repr(html_list))}")
         print(repr(html_list))
-        print(query_gpt_api(repr(html_list)))
-    copy_into_dir(test_file_list)
-
-
-def handle_file_list_to_file():
-    output_file = 'output.txt'
-    # 先清空文件内容
-    open(output_file, 'w', encoding='utf-8').close()
-
-    filename_list = list_files(input_path)
-    test_file_list = random.sample(filename_list, max_testcase_count)
-
-    with open(output_file, 'a', encoding='utf-8') as f:
-        for filename in test_file_list:
-            f.write('-----------------------------------------\n')
-            html_list = html_filter(input_path + filename)
-            f.write(f"{filename}'s size = {len(repr(html_list))}\n")
-            f.write(f"{html_list}\n")
-            f.write(f"{query_gpt_api(repr(html_list))}\n")
-
+        # 向gpt发出询问
+        check = False
+        while check == False:
+            # answer = gpt.query_api_sectional(repr(html_list))
+            answer = gpt.query_api_single(repr(html_list))
+            print(answer)
+            check = is_valid_json(answer)
+        # print(answer)
+        # 输出到文件
+        with open(output_path + filename + '.output', 'w', encoding='utf-8') as f:
+            f.write(answer)
     copy_into_dir(test_file_list)
 
 
 def main():
-    handle_file_list()
+    handle_file_list(random_seed)
 
 
 if __name__ == "__main__":
