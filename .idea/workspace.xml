@@ -4,13 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9f65d9dc-31a5-416a-bf4f-a308527c14e7" name="Changes" comment="openai-api .env -2" />
+    <list default="true" id="9f65d9dc-31a5-416a-bf4f-a308527c14e7" name="Changes" comment="openai-api .env -2">
+      <change afterPath="$PROJECT_DIR$/openai_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ChangesViewManager" show_ignored="true" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
@@ -180,7 +190,7 @@
       <workItem from="1720144320280" duration="7428000" />
       <workItem from="1720159286374" duration="1383000" />
       <workItem from="1720160688277" duration="362000" />
-      <workItem from="1720161061034" duration="650000" />
+      <workItem from="1720161061034" duration="2006000" />
     </task>
     <task id="LOCAL-00001" summary="openai-api modified">
       <option name="closed" value="true" />
